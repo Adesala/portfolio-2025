@@ -408,7 +408,7 @@ const Items = ({ w = 0.7, gap = 20, uDistortion, uMouse, onPointerOver, onPointe
         { url:  '/images/mel&nous.mp4', name: 'Mel & Nous' },
         { url:   '/images/AlpineTeaser.mp4', name: 'Alpine Quality' },
         { url:   '/images/siteAdesign.mp4', name: 'Loc Agent' },
-        { url:        '/images/video4.mp4', name: 'Vidéo 4' },
+        { url:        '/images/video2.mp4', name: 'Vidéo 4' },
       ];
 
    // Récupère la largeur de l'écran en 3D
