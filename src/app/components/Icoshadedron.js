@@ -19,6 +19,8 @@ const FloatingIcosahedron = ({ position, scale, mousePositionRef }) => {
     return axis.lengthSq() === 0 ? new THREE.Vector3(1, 0, 0) : axis.normalize();
   }, []);
 
+  const stablePosition = useMemo(() => position, []);
+
   // Calculer la distance en X/Y entre la souris et l'icosahedron
   const distance = useRef(0);
   useEffect(() => {
@@ -32,10 +34,27 @@ const FloatingIcosahedron = ({ position, scale, mousePositionRef }) => {
     if (meshRef.current) {
       const t = clock.getElapsedTime();
 
-      // Effet de flottement naturel
-      meshRef.current.position.x = position[0] + Math.sin(t * speed) * 0.5 * direction.x;
-      meshRef.current.position.y = position[1] + Math.cos(t * speed) * 0.3 * direction.y;
-      meshRef.current.position.z = position[2] + Math.sin(t * speed * 0.7) * 0.2 * direction.z;
+      const oscillationFactor = 0.1; // Faible oscillation pour limiter les mouvements excessifs
+      const x = Math.sin(t * speed) * oscillationFactor * direction.x;
+      const y = Math.cos(t * speed) * oscillationFactor * direction.y;
+      const z = Math.sin(t * speed * 0.7) * oscillationFactor * direction.z;
+
+      // Appliquer la position avec lerp pour lisser le mouvement
+      meshRef.current.position.x = THREE.MathUtils.lerp(
+        meshRef.current.position.x, 
+        stablePosition[0] + x, 
+        0.1 // Le facteur de lissage (plus élevé pour un mouvement plus doux)
+      );
+      meshRef.current.position.y = THREE.MathUtils.lerp(
+        meshRef.current.position.y, 
+        stablePosition[1] + y, 
+        0.1
+      );
+      meshRef.current.position.z = THREE.MathUtils.lerp(
+        meshRef.current.position.z, 
+        stablePosition[2] + z, 
+        0.1
+      );
 
       // Appliquer l'effet de mouvement si la distance est suffisamment proche
       const maxDistance = 20; // Limiter la distance pour déclencher l'effet
@@ -66,34 +85,38 @@ const FloatingIcosahedron = ({ position, scale, mousePositionRef }) => {
 };
 
 const IcosahedronScene = ({ count = 100 }) => {
-  const { viewport } = useThree();
+  const { size } = useThree();
   const mousePositionRef = useRef({ x: 0, y: 0 });
+
+  // Stocker les positions et tailles des objets une fois pour toute
+  const positionsRef = useRef(null);
+
+  if (!positionsRef.current) {
+    positionsRef.current = Array.from({ length: count }, () => ({
+      position: [
+        (Math.random() - 0.5) * size.width  / 10,   // Utilisation de la taille fixe
+        (Math.random() - 0.5) * size.height  / 10,
+        -Math.random() * 5 - 5,                    // Position Z derrière
+      ],
+      scale: Math.random() * 1.5 + 0.3,
+    }));
+  }
 
   // Détecter la position de la souris
   useEffect(() => {
     const handleMouseMove = (event) => {
       const x = (event.clientX / window.innerWidth) * 2 - 1;
       const y = -(event.clientY / window.innerHeight) * 2 + 1;
-      mousePositionRef.current = { x, y }; // Utiliser useRef pour ne pas déclencher de re-render
+      mousePositionRef.current = { x, y };
     };
-    
+
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Génération de positions aléatoires
-  const icosahedrons = Array.from({ length: count }, () => ({
-    position: [
-      (Math.random() - 0.5) * viewport.width * 2,
-      (Math.random() - 0.5) * viewport.height * 2,
-      -Math.random() * 5 - 5, // Z négatif pour être derrière
-    ],
-    scale: Math.random() * 1.5 + 0.3,
-  }));
-
   return (
     <>
-      {icosahedrons.map((props, i) => (
+      {positionsRef.current.map((props, i) => (
         <FloatingIcosahedron key={i} {...props} mousePositionRef={mousePositionRef} />
       ))}
     </>
@@ -101,4 +124,7 @@ const IcosahedronScene = ({ count = 100 }) => {
 };
 
 export default IcosahedronScene;
+
+
+
 

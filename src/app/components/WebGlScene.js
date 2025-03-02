@@ -7,6 +7,8 @@ import { motion, useTransform} from "framer-motion";
 import IcosahedronScene from "./Icoshadedron";
 import * as THREE from "three";
 import styles from '../assets/home.module.scss';
+import { ImgUrls } from '../constant/imgUrls';
+import { useRouter } from "next/navigation";
 
 
 
@@ -173,7 +175,7 @@ const TextureMaterial = ({ texture, mouseRef, distortionRef, uTime, scrollRef, i
 };
 
 // Composant pour afficher une image avec un mesh plane
-const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPointerOut, imageIndex, imageName }) => {
+const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPointerOut, imageIndex, imageName, projectUrl }) => {
   const texture = useVideoTexture(url); // Chargement de la texture de l'image
   const meshRef = useRef();
   const scroll = useScroll(); // Utilisation du hook useScroll directement dans Image
@@ -181,6 +183,7 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
   const mouseRef = useRef(new THREE.Vector2(0.5, 0.5));
   const distortionRef = useRef(0);
   const scrollRef = useRef(0); // Créer une référence pour la position du scroll
+  const [hovered, setHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [clicked, setClicked] = useState(false);
   const groupRef = useRef();
@@ -189,7 +192,10 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
   const scaleRef = useRef(1);
   const initialPosition = new THREE.Vector3(...position);
   const positionRef = useRef(initialPosition.clone());
-  // Mettre à jour la valeur du scroll dans la référence à chaque fram
+  const router = useRouter();
+  // Mettre à jour la valeur du scroll dans la référence à chaque frame
+
+
 
   useFrame((_,delta) => {
     const currentScroll = scroll.offset;
@@ -229,6 +235,7 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
 
 
   const handlePointerMove = (event) => {
+   
     const mouse = new THREE.Vector2(
       (event.clientX / size.width) * 2 - 1,
       -(event.clientY / size.height) * 2 + 1
@@ -250,9 +257,10 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
   
   // Lorsque le curseur sort de l'image, commencer à réduire la distorsion progressivement
   const handlePointerOut = () => {
+ 
     // Lancer une animation de transition pour diminuer la distorsion progressivement
     let startTime = performance.now();
-    
+    document.body.style.cursor = 'default'; 
     const reduceDistortion = () => {
       const elapsed = performance.now() - startTime;
       const progress = Math.min(elapsed / 1000, 1); // transition sur 1 seconde
@@ -273,14 +281,22 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
   };
 
   const handleClick = () => {
-    setClicked(!clicked);
-    console.log('clicked', imageIndex);
+    router.push(projectUrl);
+
+
   };
+
+
+  const handlePointerOver = () => {
+    document.body.style.cursor = 'pointer'; 
+  }
+
 
   return (
     <group ref={groupRef}> 
     <motion.mesh
     onClick={handleClick}
+    onPointerOver={handlePointerOver}
     initial={{ scale: 1, position: [0, 0, 0] }}
     animate={{
       scale: clicked ? [1, 1, 1] : [viewport.width / 2, viewport.height / 2, 1],
@@ -292,7 +308,11 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
     ref={meshRef} position={position}>
       <planeGeometry args={[imageWidth, imageHeight, 128,128]} />  {/* Images plus grandes */}
       {texture && <TextureMaterial texture={texture} mouseRef={mouseRef} distortionRef={distortionRef} uTime={0} scrollRef={scrollRef} isScrolling={isScrolling} imageWidth={imageWidth} imageHeight={imageHeight} clicked={clicked}  />}
-
+      {hovered && (
+    <Html    position={[0, 0, 0]}>
+      <div className={styles.projectName}>{imageName}</div> {/* Affiche le nom de l'image */}
+    </Html>
+  )}
     </motion.mesh>
 
           </group>
@@ -404,23 +424,18 @@ const Items = ({ w = 0.7, gap = 20, uDistortion, uMouse, onPointerOver, onPointe
       ]; */
 
 
-      const images = [
-        { url:  '/images/mel&nous.mp4', name: 'Mel & Nous' },
-        { url:   '/images/AlpineTeaser.mp4', name: 'Alpine Quality' },
-        { url:   '/images/siteAdesign.mp4', name: 'Loc Agent' },
-        { url:        '/images/video2.mp4', name: 'Vidéo 4' },
-      ];
+
 
    // Récupère la largeur de l'écran en 3D
       const imageWidth = viewport.width * 0.6; // Chaque image fait 60% de la largeur du viewport
       const spacing = viewport.width * 0.25; // Espacement entre les images (5% de la largeur du viewport)
     
       // Calcul du nombre de pages
-      const totalWidth = images.length * imageWidth + spacing * (images.length - 1);
+      const totalWidth = ImgUrls.length * imageWidth + spacing * (ImgUrls.length - 1);
       const pageLength = totalWidth / viewport.width; 
     return (
       <ScrollControls horizontal damping={0.1} pages={pageLength}>
-       <GalleryImages images={images} uMouse={uMouse} uDistortion={uDistortion}  />
+       <GalleryImages images={ImgUrls} uMouse={uMouse} uDistortion={uDistortion}  />
       </ScrollControls>
     )
   }
@@ -434,15 +449,16 @@ const { viewport } = useThree();
     <>
       {/* Utilisation de Scroll pour rendre les images scrollables */}
       <Scroll>
-        {images.map((item, i) => (
+        {ImgUrls.map((item, i) => (
           <WebGlImage
             imageIndex={i}
             key={i}
-            url={item.url}
+            url={item.src}
             position={[i * viewport.width * 0.7, 0, 0]}  // Position initiale des images
             uMouse={uMouse}
             uDistortion={uDistortion}
             imageName={item.name}
+            projectUrl={item.url}
       
           />
         ))}
