@@ -4,20 +4,7 @@ import styles from '../../assets/home.module.scss'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 
-const fadeInOut = {
-	initial: {
-		opacity: 0,
-		pointerEvents: 'none',
-	},
-	animate: {
-		opacity: 1,
-		pointerEvents: 'all',
-	},
-	exit: {
-		opacity: 0,
-		pointerEvents: 'none',
-	},
-}
+
 
 const transition = {
 	duration: 0.2,
@@ -26,20 +13,7 @@ const transition = {
 
 const PageFadeInOut = ( props ) => { 
 
-
-
-    const [slideOut,setSlideOut] = useState('')
-    const [imgOpacity, setImgOpacity] = useState('100%')
-    const [stopScroll, setStopScroll] = useState('disableScroll')
-	const [isVisible, setIsVisible] = useState(true);
-
-
-
-useEffect(()=> {
-    setTimeout(()=>{
-        setImgOpacity('0%')
-    },500)
-})
+	const [scale, setScale] = useState(1)
 
 
 	return (
@@ -60,10 +34,15 @@ useEffect(()=> {
 	/* 		initial={{clipPath: 'inset(0% 0% 0% 0%)'}}
 			animate={{clipPath: 'inset(0% 0% 100% 0%)'}}
 			exit={{clipPath: 'inset(0% 0% 0% 0%)'}} */
-			enter={{opacity: 1}}
-			animate={{opacity:0}}
-			exit={{opacity: 1}}
-			transition={{duration:1}}
+			initial={{ opacity: 1, scale: 1 }}
+			animate={{ opacity: 0, scale: scale }}
+			exit={{ opacity: 1, scale: 1 }}
+			transition={{
+			  opacity: { duration: 0.8, ease: "easeInOut" },  // Opacité disparaît d'abord
+			  scale: { duration: 0.1, ease: "easeInOut" }    // Le scale se produit après l'opacité
+			}}
+			onAnimationComplete={() => setScale(0)} 
+	
 	
 		>
 			</motion.div>
