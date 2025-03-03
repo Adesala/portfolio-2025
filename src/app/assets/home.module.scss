@@ -171,6 +171,14 @@
 }
 
 
+.scrollDown {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
 .projectName {
     background-color: red;
 
@@ -180,7 +188,7 @@
     bottom: 10%;
     h1 {
         color: white;
-        font-family: 'PlayFairDisplay', sans-serif;
+        font-family: 'PlayFairDisplay', sans-serif !important;
         font-size: 2rem;
         margin: 0;
         text-align: center;

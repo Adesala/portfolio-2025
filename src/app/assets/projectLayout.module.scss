@@ -75,7 +75,7 @@
 .btnContainer {
     position:absolute;
     bottom: 5%;
-    z-index: 90;
+    z-index: 3;
  
 }
 
@@ -154,14 +154,75 @@
 
 }
 
+
+
+
 .projectImages {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-auto-rows: 240px;
+  }
+  
+  @media screen and (min-width: 600px) {
+    .card-tall {
+      grid-row: span 2 / auto;
+    }
+  
+    .card-wide {
+      grid-column: span 2 / auto;
+    }
+  }
+
+
+
+.projectNavigationContainer {
     width: 100%;
-    margin-top: 10rem;
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Crée des colonnes flexibles */
-    gap: 10px; /* Espacement entre les images */
-    padding: 20px;
-    grid-template-rows: repeat(auto-fill, minmax(200px, auto)); /* Optionnel pour ajuster la hauteur des lignes */
+    height: 50vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: #191c1e;
+    a {
+    width: 50%;
+    height: 100%;
+    }
+
+  }
+
+  .btnToSite {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position:relative;
+  }
+
+  .btnOverlay {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #22292f;
+    opacity: 0.8;
+    transition: 0.5s ease-in-out;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}
+
+.btnOverlay:hover {
+    opacity: 0.5;
+}
+
+
+.btnText {
+  color: white;
 }
 
 

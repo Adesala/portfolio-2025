@@ -59,19 +59,26 @@ uniform float uIsClicked;
 void main() {
   vec2 uv = vUv;
 
-  // Calcul des rapports d'aspect
+  // Définir un ratio fixe (par ex: 16:9)
+  float fixedAspect = 16.0 / 9.0;
+
+  // Calcul du ratio actuel
   float textureAspect = uTextureSize.x / uTextureSize.y;
   float planeAspect = uPlaneSize.x / uPlaneSize.y;
 
-  if (planeAspect > textureAspect) {
-    // Le plane est plus large → on ajuste la hauteur de l'image
-    float scaleY = textureAspect / planeAspect;
-    uv.y = uv.y * scaleY + (1.0 - scaleY) / 2.0;
+  // Définir le scale basé sur le ratio fixe
+  vec2 scale = vec2(1.0);
+  if (planeAspect > fixedAspect) {
+    scale.y = fixedAspect / planeAspect;
   } else {
-    // L'image est plus large → on ajuste la largeur de l'image
-    float scaleX = planeAspect / textureAspect;
-    uv.x = uv.x * scaleX + (1.0 - scaleX) / 2.0;
+    scale.x = planeAspect / fixedAspect;
   }
+
+  // Centrer l'image correctement
+  uv = (uv - 0.5) * scale + 0.5;
+
+  // Empêcher les UV de dépasser [0,1] pour éviter les artefacts
+  uv = clamp(uv, 0.0, 1.0);
 
   // Échantillonnage de la texture
   vec4 color = texture2D(uTexture, uv);
@@ -88,8 +95,6 @@ void main() {
   vec4 whiteColor = vec4(1.0);
   gl_FragColor = mix(vec4(finalColor, color.a), whiteColor, uIsClicked);
 }
-
-
 `;
 
 
@@ -331,6 +336,17 @@ const Gallery = () => {
     <div
       className={styles.galleryContainer}
     >
+<motion.p
+initial={{opacity:0}}
+animate={{opacity:1, transition:{
+    type:"linear",
+    duration:3,
+    stiffness:50,
+    repeat:Infinity,
+    repeatType: "reverse"
+}}}
+className={styles.scrollDown}>Scroll Down</motion.p>
+
 
       
       {/* Canvas pour les images */}
