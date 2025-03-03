@@ -9,7 +9,7 @@ import * as THREE from "three";
 import styles from '../assets/home.module.scss';
 import { ImgUrls } from '../constant/imgUrls';
 import { useRouter } from "next/navigation";
-
+import { oswald, wallpoet} from '../assets/fonts';
 
 
 
@@ -330,9 +330,14 @@ const Gallery = () => {
     
     const [uMouse, setUMouse] = useState(new THREE.Vector2(0.5, 0.5)); // Position de la souris
     const [uDistortion, setUDistortion] = useState(0); // Intensité de la distorsion
+    const router = useRouter();
 
+    const goToProject = (url) => {
+      router.push(url);
+    }
         
   return (
+    <> 
     <div
       className={styles.galleryContainer}
     >
@@ -346,6 +351,7 @@ animate={{opacity:1, transition:{
     repeatType: "reverse"
 }}}
 className={styles.scrollDown}>Scroll Down</motion.p>
+
 
 
       
@@ -390,6 +396,63 @@ className={styles.scrollDown}>Scroll Down</motion.p>
       </Canvas>
       <Loader />
     </div>
+    <div className={styles.mobileGalleryContainer}>
+      <div className={`${styles.mobileProjectLinks}`}>
+        {ImgUrls.map((item, i) => (
+          <motion.div
+            key={i}
+            className={styles.projectLink}
+            onClick={() => goToProject(item.url)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <p className={`${styles.mobileIndex}  ${wallpoet.className}`}>{`[ 0${i + 1} ]`}</p>
+           <p className={`${styles.mobileLinks}  ${oswald.className}`}>{item.name}</p>
+         
+          </motion.div>
+        ))}
+      </div>
+    <Canvas
+        style={{ width: '100%', height: '100%' }}
+        camera={{ position: [0, 0, 25], near: 0.1, far: 1000 }}
+        gl={{ toneMapping: THREE.NoToneMapping }}
+      >
+  
+       <directionalLight 
+  position={[5, 5, 5]} 
+  intensity={1.5} 
+  castShadow 
+  shadow-mapSize={[1024, 1024]}
+/>
+<spotLight 
+  position={[-5, 5, 5]} 
+  angle={0.3} 
+  intensity={1} 
+  penumbra={0.5}
+/>
+<spotLight 
+  position={[5, -5, -5]} 
+  angle={0.3} 
+  intensity={1} 
+  penumbra={0.5}
+/>
+        <FloatingLights />
+<FloatingLights />
+<FloatingLights />
+         <Suspense fallback={null}>
+       
+        <IcosahedronScene ref={IcosahedronScene} />
+         </Suspense>
+         <Environment preset="studio" />
+         <EffectComposer>
+         <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+         <Vignette eskil={false} offset={0.1} darkness={0.8} />
+
+         </EffectComposer>
+      </Canvas>
+      <Loader />
+    </div>
+    </>
   );
 };
 

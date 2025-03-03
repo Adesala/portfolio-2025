@@ -94,6 +94,7 @@
 .homeSubTitle {
     text-align: center;
     width: 100%;
+    color:white;
 }
 
 
@@ -152,6 +153,7 @@
 .scrollDown {
 
     font-size: 0.875rem;
+    color: white;
 
 }
 
@@ -253,7 +255,23 @@
 }
 
 
+.projectFooter {
+    height: 2rem;
+    margin-right: auto;
+}
+
+
   @media only screen and (max-width: 500px) {
+
+    .homeTitle {
+        font-size: 2rem;
+    }
+
+
+    .homeSubTitle {
+        font-size: 0.875rem;
+    }
+
     .projectContent {
         width: 100%;
   padding:20px;
@@ -275,7 +293,7 @@
 
     .projectNavigationContainer {
         flex-direction: column;
-        height: 100vh;
+        height: 50vh;
         margin-top: 2rem;
         a {
             width: 100%;
@@ -292,6 +310,10 @@
   }
 
 
+  .emailSender {
+    cursor: pointer;
+  }
+
   .btnToSite {
     height: 100px;
     width: 100px;
@@ -301,7 +323,7 @@
     align-items: center;
     justify-content: center;
     border:solid 1px white;
-    margin-top: 20px;
+    margin-top: 2rem;
     transition: 0.5s;
     cursor: pointer;
     text-align: center;
@@ -343,3 +365,5 @@
         }
     }
 }
+
+
