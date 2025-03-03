@@ -3,7 +3,6 @@ const projectInfos = [
         id:0,
         title: 'Arthur Dorval',    
         text: `Pour le site vitrine en cours de création pour l'artiste Arthur Dorval, j'ai eu le plaisir de développer un espace en ligne dédié à ses œuvres. Bien que la création de l'identité visuelle ne soit pas de mon ressort, j'ai mis un point d'honneur à mettre en avant le travail artistique de l’artiste. J'ai conçu un site simple et élégant qui permet de présenter ses créations de manière claire et attrayante. La navigation a été pensée pour offrir une expérience utilisateur fluide et immersive. Actuellement, le site est en phase de lancement, mais il est prévu qu'il soit étoffé par la suite avec des fonctionnalités supplémentaires et davantage de contenu pour enrichir encore plus la présentation de son travail. Ce projet vise à offrir à Arthur Dorval une première vitrine en ligne efficace, avec la promesse d'une évolution continue pour mieux refléter l'évolution de son art.`,
-        videoUrl:'https://youtu.be/tcb7SFyBZ7Y',
         stack: '',
         websiteLink:'https://www.arthurdorval.fr',
         projectUrl:'/projects/arthur-dorval/',
