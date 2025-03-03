@@ -9,6 +9,7 @@ import * as THREE from "three";
 import {motion} from 'framer-motion';
 import FramerMagnetic from './FramerMagnetic';
 import Link from 'next/link';
+import { oswald } from '../assets/fonts';
 
 
 const Gallery = () => {
@@ -93,7 +94,7 @@ const Home = () => {
             initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
             animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
             transition={{ duration: 2, delay: 0.8, type: 'linear', stiffness: 120}}
-            className={styles.homeTitle}>Creative Developer</motion.h1>
+            className={`${styles.homeTitle} ${oswald.className}`}>Creative Developer</motion.h1>
 
             </div>
             <div className={styles.btnContainer}>

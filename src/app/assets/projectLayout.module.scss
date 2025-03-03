@@ -166,7 +166,7 @@
     height: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    margin-top:20rem;
+    margin-top:10rem;
   }
   
   .item {
@@ -199,7 +199,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    background-color: #191c1e;
+    background-color: #0d0e0e;
     a {
     width: 50%;
     height: 100%;
@@ -207,7 +207,16 @@
 
   }
 
-  .btnToSite {
+.videoContainer {
+    width: 100%;
+    .player {
+        width: 100%;
+        
+    }
+}
+
+
+  .btnToProject {
     width: 100%;
     height: 100%;
     background-size: cover;
@@ -225,15 +234,16 @@
     width: 100%;
     height: 100%;
     background-color: #0e0e0e;
-    opacity: 0.8;
+    opacity: 0.5;
     transition: 0.5s ease-in-out;
     top: 0;
     left: 0;
     cursor: pointer;
+    z-index: 2;
 }
 
 .btnOverlay:hover {
-    opacity: 0.5;
+    opacity: 0.3;
 }
 
 
@@ -266,10 +276,70 @@
     .projectNavigationContainer {
         flex-direction: column;
         height: 100vh;
+        margin-top: 2rem;
         a {
             width: 100%;
             height: 100%;
         }
         
     }
+
+
+    .projectImages {
+        margin-top: 2rem;
+    }
+
   }
+
+
+  .btnToSite {
+    height: 100px;
+    width: 100px;
+    border-radius: 50% 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border:solid 1px white;
+    margin-top: 20px;
+    transition: 0.5s;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    padding:5px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: bold;
+    z-index: 3;
+.btnText{
+    color: white;
+    font-size: 12px;
+    margin: 0;
+    word-wrap:break-word;
+    font-family: 'Oswald', sans-serif;
+    font-weight: bold;
+}
+
+.btnIcon, .btnIconPrevious {
+    display: none;
+}
+.btnIconPrevious {
+    transform: rotate(180deg);
+}
+
+    &:hover {
+        transform: scale(1.2);
+        color: #0e0e0e;
+        background-color: white;
+        .btnText {
+            display: none;
+        }
+        .btnIcon, .btnIconPrevious {
+            display: inline-block;
+            margin:0;
+            color:#0e0e0e;
+            font-size: 20px;
+            
+           
+        }
+    }
+}
