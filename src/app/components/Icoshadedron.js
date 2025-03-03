@@ -84,18 +84,18 @@ const FloatingIcosahedron = ({ position, scale, mousePositionRef }) => {
   );
 };
 
-const IcosahedronScene = ({ count = 100 }) => {
+const IcosahedronScene = ({ count = 200 }) => {
   const { size } = useThree();
   const mousePositionRef = useRef({ x: 0, y: 0 });
-
+  const dispersionFactor = size.width < 768 ? 3 : 10;
   // Stocker les positions et tailles des objets une fois pour toute
   const positionsRef = useRef(null);
 
   if (!positionsRef.current) {
     positionsRef.current = Array.from({ length: count }, () => ({
       position: [
-        (Math.random() - 0.5) * size.width  / 10,   // Utilisation de la taille fixe
-        (Math.random() - 0.5) * size.height  / 10,
+        (Math.random() - 0.5) * size.width  / dispersionFactor,   // Utilisation de la taille fixe
+        (Math.random() - 0.5) * size.height  / dispersionFactor,
         -Math.random() * 5 - 5,                    // Position Z derrière
       ],
       scale: Math.random() * 1.5 + 0.3,

@@ -43,7 +43,8 @@ const projectInfos = [
         websiteLink:'https://tomahawkconsulting.fr',
         projectUrl:'/projects/tomahawk-consulting/',
         textureName: 'Tomahawk.png',
-        job: 'UX UI Design & Development'
+        job: 'UX UI Design & Development',
+        imagesUrls: ['/images/tomahawkHeader.gif', '/images/tomahawkDetails.gif']
 
     },
     

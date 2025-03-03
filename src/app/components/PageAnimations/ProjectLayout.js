@@ -11,7 +11,8 @@ import FramerMagnetic from '../FramerMagnetic';
 import Link from 'next/link';
 import projectInfos from "@/app/constant/projectsInfos";
 import ReactPlayer from "react-player/youtube";
-import { oswald, inter } from "../../assets/fonts";
+import { oswald, inter, wallpoet } from "../../assets/fonts";
+import { useRouter } from 'next/navigation';
 
 
 const Gallery = () => {
@@ -87,7 +88,7 @@ const FloatingLights = () => {
  const ProjectLayout = ({props, currentProject}) => {
 
   
-
+const router = useRouter()
 const projectName = use(currentProject.params)
 const project = projectInfos.find(p => p.projectUrl === `/projects/${projectName.projectName}/`);
 const container = useRef(null);
@@ -97,7 +98,7 @@ const { scrollYProgress } = useScroll({
 
   target: container,
 
-  offset: ["start 0.9", "start 0.5"]
+  offset: ["start 0.9", "start 0.25"]
 
 })
 
@@ -174,7 +175,7 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
       clipPath: 'inset(0% 0% 0% 0%)', // L'animation de clip-path quand l'élément devient visible
     }}
     initial={{
-      clipPath: 'inset(0% 0% 100% 0%)', // L'état initial (complètement caché avec inset)
+      clipPath: 'inset(100% 100% 100% 0%)', // L'état initial (complètement caché avec inset)
     }}
     transition={{
       duration: 1.5,
@@ -284,7 +285,6 @@ className={styles.btnToProject}>
       }}
       transition={{
         duration: 1.5,
-        delay:0.5, 
         type:'spring', // Durée de l'animation
          // Courbe de transition
       }}
@@ -297,8 +297,11 @@ className={styles.btnToProject}>
 )}
 </motion.div>
 
-
-          
+<div className={styles.projectFooter}>
+  <div className={styles.projectFooterEmail}>
+    <p className={`${wallpoet.className} ${styles.emailSender}`} onClick={() => router.push('mailto:madeo.decoration@gmail.com')}>[ Stay in touch ! ]</p>
+  </div>
+   </div>
         </div>
     </div>
 )

@@ -17,7 +17,7 @@ const Gallery = () => {
       
   return (
     <div
-      className={styles.galleryContainer}
+      className={styles.homeGalleryContainer}
     >
 
       
@@ -50,11 +50,11 @@ const Gallery = () => {
 <FloatingLights />
 <FloatingLights />
          <Suspense fallback={null}>
-        <IcosahedronScene ref={IcosahedronScene} />
+      
          </Suspense>
          <Environment preset="studio" />
          <EffectComposer>
-    
+         <IcosahedronScene ref={IcosahedronScene} />
         <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
         <Noise opacity={0.02} />
         <Vignette eskil={false} offset={0.1} darkness={1.1} />
