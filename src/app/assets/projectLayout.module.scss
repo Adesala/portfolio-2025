@@ -212,7 +212,8 @@
 .videoContainer {
     width: 100%;
     .player {
-        width: 100%;
+        width: 100% !important;
+        height: 700px !important;
         
     }
 }
@@ -262,6 +263,16 @@
 
 
   @media only screen and (max-width: 500px) {
+
+
+    .videoContainer {
+        width: 100%;
+        .player {
+            width: 100% !important;
+            height: 300px !important;
+            
+        }
+    }
 
     .homeTitle {
         font-size: 2rem;

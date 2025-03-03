@@ -219,14 +219,14 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
           
           <ReactPlayer 
           className={styles.player}
-          width="100%" 
+        
           loop
           controls
-          playing
+          playing={true}
           muted
           volume={null}     
 url={project?.videoUrl}
-light="/static/normal-sarong-0007.jpg"/>
+/>
 
           
  </motion.div> 
