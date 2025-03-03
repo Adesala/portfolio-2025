@@ -154,7 +154,10 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
 
 <div className={styles.projectImages}>
   {project?.imagesUrls.map((img, i) => (
-    <img key={i} src={img} alt={project} />
+    <motion.div  key={i} className={styles.item}>
+       <img src={img} alt={project} />
+    </motion.div>
+   
   ))}
 
 </div>
@@ -172,7 +175,8 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
 className={styles.btnToSite}>
     <motion.div className={styles.btnOverlay}>
     </motion.div>  
-<p className={styles.btnText}>{projectInfos[project.id - 1].title}</p>
+<p>{`[ 0${project.id + 1 - 1} ]`}</p>
+<h1 className={styles.btnText}>{projectInfos[project.id - 1].title}</h1>
 </motion.div>
 </Link>
 )}
@@ -187,8 +191,8 @@ className={styles.btnToSite}>
           disabled={project.id  === projectInfos.length - 1}
 
 className={styles.btnToSite}>
-    
-      <p className={styles.btnText}>{projectInfos[project.id  + 1].title}</p>
+    <p>{`[ 0${project.id + 1 + 1} ]`}</p>
+      <h1 className={styles.btnText}>{projectInfos[project.id  + 1].title}</h1>
   <motion.div className={styles.btnOverlay}>
     </motion.div>     
 
