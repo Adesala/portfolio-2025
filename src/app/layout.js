@@ -1,9 +1,17 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Wallpoet, Oswald } from "next/font/google";
 import "./globals.css";
 import PageAnimatePresence from "./components/PageAnimations/PageAnimatePresence";
 import Link from "next/link";
 
+ const wallpoet = Wallpoet({   weight: '400', // Cette police n'a qu'un seul poids
+subsets: ['latin'],
+display: 'swap',})
 
+ const oswald = Oswald({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 
 export const metadata = {
@@ -11,11 +19,14 @@ export const metadata = {
   description: "Developed with love",
 };
 
+
+
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`antialiased`}
+        className={`${wallpoet.className} ${oswald.classNAme} antialiased`}
       >
        
         <PageAnimatePresence>

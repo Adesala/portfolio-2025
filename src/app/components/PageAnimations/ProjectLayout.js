@@ -2,7 +2,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Loader, Environment} from "@react-three/drei";
 import { Bloom, EffectComposer, Noise , Vignette } from '@react-three/postprocessing'
-import React, {Suspense, useState, useRef, use} from 'react';
+import React, {Suspense, useState, useRef, use, useEffect} from 'react';
 import styles from '../../assets/projectLayout.module.scss';
 import IcosahedronScene from '../Icoshadedron';
 import * as THREE from "three";
@@ -10,6 +10,8 @@ import {motion, useScroll, useTransform, useMotionValueEvent} from 'framer-motio
 import FramerMagnetic from '../FramerMagnetic';
 import Link from 'next/link';
 import projectInfos from "@/app/constant/projectsInfos";
+import ReactPlayer from "react-player/youtube";
+import { oswald, inter } from "../../assets/fonts";
 
 
 const Gallery = () => {
@@ -84,6 +86,8 @@ const FloatingLights = () => {
 
  const ProjectLayout = ({props, currentProject}) => {
 
+  
+
 const projectName = use(currentProject.params)
 const project = projectInfos.find(p => p.projectUrl === `/projects/${projectName.projectName}/`);
 const container = useRef(null);
@@ -106,6 +110,16 @@ console.log(project.imagesUrls)
 
 const words = project?.text.split(" ")
 
+const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // ou un autre composant de fallback
+  }
+
   return (
     <div  className={styles.projectContainer}>
         <div className={styles.infoContainer}>
@@ -113,12 +127,12 @@ const words = project?.text.split(" ")
          initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
          animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
          transition={{ duration: 1, delay: 0.2}}
-        className={styles.homeSubTitle}>{`[ ${project.job} ]`}</motion.p>
+        className={`${styles.homeSubTitle}`}>{`[ ${project.job} ]`}</motion.p>
         <motion.h1
         initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
         animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
         transition={{ duration: 2, delay: 0.8, type: 'linear', stiffness: 120}}
-        className={styles.homeTitle}>{project?.title}</motion.h1>
+        className={`${styles.homeTitle} ${oswald.className}`}>{project?.title}</motion.h1>
 
         </div>
         <div className={styles.btnContainer}>
@@ -140,7 +154,7 @@ className={styles.scrollDown}>Scroll Down</motion.p>
         </div>
         <div ref={textContainer} className={styles.projectContent}>
           <p className={styles.projectCount}>{`[ Project 0${project.id + 1} / 0${projectInfos.length} ]`}</p>
-          <p ref={container} className={styles.paragraph}>
+          <p ref={container} className={`${styles.paragraph} ${inter.className}`}>
   {words.map( (word, i) => {
 
 const start = i / words.length
@@ -153,15 +167,71 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
   </p>
 
 <div className={styles.projectImages}>
-  {project?.imagesUrls.map((img, i) => (
-    <motion.div  key={i} className={styles.item}>
+  {project?.imagesUrls && (
+  project?.imagesUrls.map((img, i) => (
+    <motion.div
+    whileInView={{
+      clipPath: 'inset(0% 0% 0% 0%)', // L'animation de clip-path quand l'élément devient visible
+    }}
+    initial={{
+      clipPath: 'inset(0% 0% 100% 0%)', // L'état initial (complètement caché avec inset)
+    }}
+    transition={{
+      duration: 1.5,
+      delay:0.5, 
+      type:'spring', // Durée de l'animation
+       // Courbe de transition
+    }}
+    key={i} className={styles.item}>
        <img src={img} alt={project} />
     </motion.div>
-   
-  ))}
+  ))
+  )}
+
+  {isClient && project?.videoUrl && (
+      <motion.div
+      className={styles.videoContainer}
+       key="wrapper"
+       initial={{ opacity: 0 , x: 20}}
+       animate={{ opacity: 1, x:0 }}
+       transition={{duration:"1",delay:"1.4", stiffness:15}}>
+       
+          
+          <ReactPlayer 
+          className={styles.player}
+          width="100%" 
+          loop
+          controls
+          playing
+          muted
+          volume={null}     
+url={project?.videoUrl}
+light="/static/normal-sarong-0007.jpg"/>
+
+          
+ </motion.div> 
+  )}
+
+
 
 </div>
-
+{project?.websiteLink && (
+      <FramerMagnetic>
+      <motion.div
+       key="text"
+       initial={{ opacity: 0 ,x:-20}}
+       animate={{ opacity: 1, x:0 }}
+       transition={{duration:"1.5",delay:"2", stiffness:15}}
+      className={styles.btnToSite}>
+        <a href={project.websiteLink} target="_blank">
+      <p className={styles.btnText}>{`GO TO WEBSITE`}</p>
+      <p className={styles.btnIcon}>&#10149;</p>
+      </a>
+      
+      </motion.div>
+      </FramerMagnetic>
+   
+)}
 
 <motion.div className={styles.projectNavigationContainer}>
 {project.id > 0 && (
@@ -172,11 +242,24 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
  animate={{ opacity: 1, x:0 }}
  transition={{duration:"1.5",delay:"2", stiffness:15}}
  disabled={project.id === 0}
-className={styles.btnToSite}>
+className={styles.btnToProject}>
     <motion.div className={styles.btnOverlay}>
     </motion.div>  
 <p>{`[ 0${project.id + 1 - 1} ]`}</p>
-<h1 className={styles.btnText}>{projectInfos[project.id - 1].title}</h1>
+<motion.h1
+ whileInView={{
+  clipPath: 'inset(0% 0% 0% 0%)', // L'animation de clip-path quand l'élément devient visible
+}}
+initial={{
+  clipPath: 'inset(0% 0% 100% 0%)', // L'état initial (complètement caché avec inset)
+}}
+transition={{
+  duration: 1.5,
+  delay:0.5, 
+  type:'spring', // Durée de l'animation
+   // Courbe de transition
+}}
+className={`${styles.btnText} ${oswald.className}`}>{projectInfos[project.id - 1].title}</motion.h1>
 </motion.div>
 </Link>
 )}
@@ -190,9 +273,22 @@ className={styles.btnToSite}>
 
           disabled={project.id  === projectInfos.length - 1}
 
-className={styles.btnToSite}>
+className={styles.btnToProject}>
     <p>{`[ 0${project.id + 1 + 1} ]`}</p>
-      <h1 className={styles.btnText}>{projectInfos[project.id  + 1].title}</h1>
+      <motion.h1
+       whileInView={{
+        clipPath: 'inset(0% 0% 0% 0%)', // L'animation de clip-path quand l'élément devient visible
+      }}
+      initial={{
+        clipPath: 'inset(0% 0% 100% 0%)', // L'état initial (complètement caché avec inset)
+      }}
+      transition={{
+        duration: 1.5,
+        delay:0.5, 
+        type:'spring', // Durée de l'animation
+         // Courbe de transition
+      }}
+      className={`${styles.btnText} ${oswald.className}`}>{projectInfos[project.id  + 1].title}</motion.h1>
   <motion.div className={styles.btnOverlay}>
     </motion.div>     
 
