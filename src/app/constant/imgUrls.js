@@ -1,8 +1,8 @@
 export const ImgUrls =  [
 
-    { url:'/projects/arthur-dorval/', src:'/images/siteAdesign.mp4', name: 'Loc Agent' },
+    { url:'/projects/arthur-dorval/', src:'/images/ArthurDorval.mp4', name: 'Arthur Dorval' },
+    { url:'/projects/mel-et-nous/', src:'/images/mel&nous.mp4', name: 'Mel & Nous' },
     { url:'/projects/alpine-quality/', src:'/images/AlpineTeaser.mp4', name: 'Alpine Quality' },
-    { url:'/projects/arthur-dorval/', src:'/images/siteAdesign.mp4', name: 'Loc Agent' },
-    { url:'/projects/tomahawk-consulting/', src:'/images/video2.mp4', name: 'Vidéo 4' }
+    { url:'/projects/tomahawk-consulting/', src:'/images/TomahawkTeaser.mp4', name: 'Tomahawk Consulting' }
 
 ]

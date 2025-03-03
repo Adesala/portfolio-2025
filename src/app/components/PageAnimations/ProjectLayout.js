@@ -160,16 +160,50 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
 </div>
 
 
+<motion.div className={styles.projectNavigationContainer}>
+{project.id > 0 && (
+<Link style={{width: project.id > projectInfos.length - 1 ? '50%' : '100%'}} href={projectInfos[project.id - 1].projectUrl}>    
+       <motion.div
+ key="text"
+ initial={{ opacity: 0 ,x:-20}}
+ animate={{ opacity: 1, x:0 }}
+ transition={{duration:"1.5",delay:"2", stiffness:15}}
+ disabled={project.id === 0}
+className={styles.btnToSite}>
+    <motion.div className={styles.btnOverlay}>
+    </motion.div>  
+<p className={styles.btnText}>{projectInfos[project.id - 1].title}</p>
+</motion.div>
+</Link>
+)}
+{project.id < projectInfos.length - 1 && (
+<Link style={{width: project.id < 0 ? '50%' : '100%'}} href={projectInfos[project.id + 1].projectUrl}>
+<motion.div
+ key="text"
+ initial={{ opacity: 0 ,x:-20}}
+ animate={{ opacity: 1, x:0 }}
+ transition={{duration:"1.5",delay:"2", stiffness:15}}
+
+          disabled={project.id  === projectInfos.length - 1}
+
+className={styles.btnToSite}>
+    
+      <p className={styles.btnText}>{projectInfos[project.id  + 1].title}</p>
+  <motion.div className={styles.btnOverlay}>
+    </motion.div>     
+
+</motion.div>
+</Link>
+)}
+</motion.div>
+
+
           
         </div>
     </div>
 )
 
-  
-
 };
-
-
 
 const Word = ({children, progress, range}) => {
   const textOpacity = useTransform(progress, range, [0.1, 1])

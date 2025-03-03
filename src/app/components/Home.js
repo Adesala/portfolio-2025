@@ -88,7 +88,7 @@ const Home = () => {
              initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
              animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
              transition={{ duration: 1, delay: 0.2}}
-            className={styles.homeSubTitle}>{`Hello, my name is Adéola i'm a`}</motion.p>
+            className={styles.homeSubTitle}>{`[ UX UI Design, Front-end Development, 3D Modeling ]`}</motion.p>
             <motion.h1
             initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
             animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
