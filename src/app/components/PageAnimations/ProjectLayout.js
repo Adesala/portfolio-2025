@@ -2,7 +2,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Loader, Environment} from "@react-three/drei";
 import { Bloom, EffectComposer, Noise , Vignette } from '@react-three/postprocessing'
-import React, {Suspense, useState, useRef, use, useEffect} from 'react';
+import React, {Suspense, useState, useRef, use, useEffect, useLayoutEffect} from 'react';
 import styles from '../../assets/projectLayout.module.scss';
 import IcosahedronScene from '../Icoshadedron';
 import * as THREE from "three";
@@ -13,6 +13,7 @@ import projectInfos from "@/app/constant/projectsInfos";
 import ReactPlayer from "react-player/youtube";
 import { oswald, inter, wallpoet } from "../../assets/fonts";
 import { useRouter } from 'next/navigation';
+
 
 
 const Gallery = () => {
@@ -94,13 +95,28 @@ const project = projectInfos.find(p => p.projectUrl === `/projects/${projectName
 const container = useRef(null);
 const [, setScrollValue] = useState()
 const textContainer = useRef(null)
+const [key, setKey] = useState(0);
+const [isMounted, setIsMounted] = useState(false);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    if (container.current) {
+   
+      setIsMounted(true); // Active l'animation une fois l'élément monté
+    }
+  }, 100); // Le délai peut être ajusté, cela permet de retarder l'exécution de useScroll jusqu'à ce que le DOM soit complètement prêt.
+
+  return () => clearTimeout(timer); // Nettoyage du timer à la destruction du composant
+}, []);
+
 const { scrollYProgress } = useScroll({
 
-  target: container,
+  target: isMounted ? container : null,
 
-  offset: ["start 0.9", "start 0.25"]
-
+  offset: ["start 0.8", "start 0.25"],
+  
 })
+
 
 useMotionValueEvent(scrollYProgress, 'change', (latest) => {
   console.log('Value:', latest)
@@ -120,6 +136,9 @@ const [isClient, setIsClient] = useState(false);
   if (!isClient) {
     return null; // ou un autre composant de fallback
   }
+
+  
+  
 
   return (
     <div  className={styles.projectContainer}>
@@ -155,7 +174,7 @@ className={styles.scrollDown}>Scroll Down</motion.p>
         </div>
         <div ref={textContainer} className={styles.projectContent}>
           <p className={styles.projectCount}>{`[ Project 0${project.id + 1} / 0${projectInfos.length} ]`}</p>
-          <p ref={container} className={`${styles.paragraph} ${inter.className}`}>
+          <p key={key} ref={container} className={`${styles.paragraph} ${inter.className}`}>
   {words.map( (word, i) => {
 
 const start = i / words.length
@@ -299,7 +318,9 @@ className={styles.btnToProject}>
 
 <div className={styles.projectFooter}>
   <div className={styles.projectFooterEmail}>
-    <p className={`${wallpoet.className} ${styles.emailSender}`} onClick={() => router.push('mailto:madeo.decoration@gmail.com')}>[ Stay in touch ! ]</p>
+    <a href="mailto:madeo.decoration@gmail.com?subject=Votre%20sujet&body=Votre%20message" target="_blank">
+    <p className={`${wallpoet.className} ${styles.emailSender}`}>[ Stay in touch ! ]</p>
+    </a>
   </div>
    </div>
         </div>
@@ -311,7 +332,7 @@ className={styles.btnToProject}>
 const Word = ({children, progress, range}) => {
   const textOpacity = useTransform(progress, range, [0.1, 1])
   return <span className={styles.word}>
-    <motion.span style={{opacity: textOpacity.current, y: textOpacity.current * 10}}>{children}</motion.span>
+    <motion.span style={{opacity: textOpacity.current}}>{children}</motion.span>
   </span>
 }
 
