@@ -4,6 +4,7 @@ import PageAnimatePresence from "./components/PageAnimations/PageAnimatePresence
 import Link from "next/link";
 import { MusicProvider } from "./components/MusicProvider/MusicProvider";
 
+
  const wallpoet = Wallpoet({   weight: '400', // Cette police n'a qu'un seul poids
 subsets: ['latin'],
 display: 'swap',})
@@ -29,17 +30,20 @@ export default function RootLayout({ children }) {
       <body
         className={`${wallpoet.className} ${oswald.classNAme} antialiased`}
       >
-       <MusicProvider> 
+    <MusicProvider>
         <PageAnimatePresence>
         <Link href="/">
         <div className="homeBtn">
           <p>ADEOLA TCHAOU</p>
         </div>
         </Link>
-        
+      
+   
         {children}
+   
         </PageAnimatePresence>
         </MusicProvider>
+
       </body>
     </html>
   );
