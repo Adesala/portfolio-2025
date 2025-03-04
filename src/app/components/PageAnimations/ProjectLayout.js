@@ -119,11 +119,10 @@ const { scrollYProgress } = useScroll({
 
 
 useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-  console.log('Value:', latest)
   setScrollValue(latest)
 })
 
-console.log(project.imagesUrls)
+
 
 const words = project?.text.split(" ")
 
