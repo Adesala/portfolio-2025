@@ -10,6 +10,7 @@ import styles from '../assets/home.module.scss';
 import { ImgUrls } from '../constant/imgUrls';
 import { useRouter } from "next/navigation";
 import { oswald, wallpoet} from '../assets/fonts';
+import MusicButton from "./MusicButton";
 
 
 
@@ -341,6 +342,8 @@ const Gallery = () => {
     <div
       className={styles.galleryContainer}
     >
+
+      <MusicButton />
 <motion.p
 initial={{opacity:0}}
 animate={{opacity:1, transition:{

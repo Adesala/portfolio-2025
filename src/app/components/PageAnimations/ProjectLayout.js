@@ -14,6 +14,7 @@ import ReactPlayer from "react-player/youtube";
 import { oswald, inter, wallpoet } from "../../assets/fonts";
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
+import MusicButton from "../MusicButton";
 
 
 
@@ -24,6 +25,7 @@ const Gallery = () => {
     <div
       className={styles.projectGalleryContainer}
     >
+      <MusicButton />
 <div className={styles.projectGalleryFooter}></div>
       
       {/* Canvas pour les images */}
