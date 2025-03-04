@@ -13,6 +13,7 @@ import projectInfos from "@/app/constant/projectsInfos";
 import ReactPlayer from "react-player/youtube";
 import { oswald, inter, wallpoet } from "../../assets/fonts";
 import { useRouter } from 'next/navigation';
+import Image from "next/image";
 
 
 
@@ -202,7 +203,7 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
        // Courbe de transition
     }}
     key={i} className={styles.item}>
-       <img src={img} alt={project} />
+       <Image src={img} alt={project} />
     </motion.div>
   ))
   )}
