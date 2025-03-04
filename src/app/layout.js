@@ -2,6 +2,7 @@ import { Wallpoet, Oswald } from "next/font/google";
 import "./globals.css";
 import PageAnimatePresence from "./components/PageAnimations/PageAnimatePresence";
 import Link from "next/link";
+import { MusicProvider } from "./components/MusicProvider/MusicProvider";
 
  const wallpoet = Wallpoet({   weight: '400', // Cette police n'a qu'un seul poids
 subsets: ['latin'],
@@ -28,7 +29,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${wallpoet.className} ${oswald.classNAme} antialiased`}
       >
-       
+       <MusicProvider> 
         <PageAnimatePresence>
         <Link href="/">
         <div className="homeBtn">
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
         
         {children}
         </PageAnimatePresence>
+        </MusicProvider>
       </body>
     </html>
   );

@@ -232,6 +232,9 @@
     align-items: center;
     justify-content: center;
     position:relative;
+    p {
+        color:white;
+    }
   }
 
   .btnOverlay {
@@ -331,6 +334,7 @@
 
   .emailSender {
     cursor: pointer;
+    color: white;
   }
 
   .btnToSite {

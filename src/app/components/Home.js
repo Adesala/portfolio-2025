@@ -10,6 +10,7 @@ import {motion} from 'framer-motion';
 import FramerMagnetic from './FramerMagnetic';
 import Link from 'next/link';
 import { oswald } from '../assets/fonts';
+import MusicButton from "./MusicButton";
 
 
 const Gallery = () => {
@@ -19,7 +20,7 @@ const Gallery = () => {
     <div
       className={styles.homeGalleryContainer}
     >
-
+        <MusicButton />
       
       {/* Canvas pour les images */}
       <Canvas
