@@ -403,11 +403,12 @@ className={styles.scrollDown}>Scroll Down</motion.p>
             key={i}
             className={styles.projectLink}
             onClick={() => goToProject(item.url)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
+            animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
+            transition={{ duration: 1, delay: 0.2 * i}}
           >
             <p className={`${styles.mobileIndex}  ${wallpoet.className}`}>{`[ 0${i + 1} ]`}</p>
-           <p className={`${styles.mobileLinks}  ${oswald.className}`}>{item.name}</p>
+           <motion.p className={`${styles.mobileLinks}  ${oswald.className}`}>{item.name}</motion.p>
          
           </motion.div>
         ))}
