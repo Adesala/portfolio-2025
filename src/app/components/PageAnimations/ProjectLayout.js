@@ -203,7 +203,8 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
        // Courbe de transition
     }}
     key={i} className={styles.item}>
-       <Image src={img} alt={project} />
+       <Image src={img} alt={project} width={0} height={0}   sizes="100vw" 
+  className="w-full h-auto"  priority />
     </motion.div>
   ))
   )}

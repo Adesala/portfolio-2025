@@ -43,6 +43,7 @@
 .projectCount {
     width: 100%;
     text-align: left;
+    color:white;
 }
 
 .infoContainer {
@@ -174,6 +175,7 @@
   .item {
     position: relative;
     overflow: hidden;
+
   }
   
   .item img {
@@ -264,6 +266,12 @@
 
   @media only screen and (max-width: 500px) {
 
+    .item {
+        position: relative;
+        overflow: hidden;
+    
+      }
+
 
     .videoContainer {
         width: 100%;
@@ -298,8 +306,8 @@
     }
 
     .word {
-        margin-right: 4px;
-        margin-top: 4px;
+        margin-right: 5px !important;
+        margin-top: 10px !important;
     }
 
     .projectNavigationContainer {
