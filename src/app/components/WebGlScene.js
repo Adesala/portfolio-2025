@@ -181,7 +181,7 @@ const TextureMaterial = ({ texture, mouseRef, distortionRef, uTime, scrollRef, i
 };
 
 // Composant pour afficher une image avec un mesh plane
-const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPointerOut, imageIndex, imageName, projectUrl }) => {
+const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPointerOut, imageIndex, imageName, projectUrl}) => {
   const texture = useVideoTexture(url); // Chargement de la texture de l'image
   const meshRef = useRef();
   const scroll = useScroll(); // Utilisation du hook useScroll directement dans Image
@@ -199,6 +199,8 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
   const initialPosition = new THREE.Vector3(...position);
   const positionRef = useRef(initialPosition.clone());
   const router = useRouter();
+  const projectIndexRef = useRef(null)
+
   // Mettre à jour la valeur du scroll dans la référence à chaque frame
 
 
@@ -212,7 +214,7 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
       scrollRef.current = currentScroll;
     } else if (scrollRef.current !== 0) {
       // Si le scroll s'est arrêté, on diminue progressivement vers 0
-      scrollRef.current = THREE.MathUtils.lerp(scrollRef.current, 0, 0.1);
+      scrollRef.current = THREE.MathUtils.lerp(scrollRef.current, 0, 0.01);
   
       // Si la valeur devient trop faible, on la force à 0 pour éviter des résidus visuels
       if (Math.abs(scrollRef.current) < 0.001) {
@@ -241,6 +243,7 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
 
 
   const handlePointerMove = (event) => {
+
    
     const mouse = new THREE.Vector2(
       (event.clientX / size.width) * 2 - 1,
@@ -263,7 +266,6 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
   
   // Lorsque le curseur sort de l'image, commencer à réduire la distorsion progressivement
   const handlePointerOut = () => {
- 
     // Lancer une animation de transition pour diminuer la distorsion progressivement
     let startTime = performance.now();
     document.body.style.cursor = 'default'; 
@@ -314,11 +316,7 @@ const WebGlImage = ({ url, position, uMouse, uDistortion, onPointerOver, onPoint
     ref={meshRef} position={position}>
       <planeGeometry args={[imageWidth, imageHeight, 128,128]} />  {/* Images plus grandes */}
       {texture && <TextureMaterial texture={texture} mouseRef={mouseRef} distortionRef={distortionRef} uTime={0} scrollRef={scrollRef} isScrolling={isScrolling} imageWidth={imageWidth} imageHeight={imageHeight} clicked={clicked}  />}
-      {hovered && (
-    <Html    position={[0, 0, 0]}>
-      <div className={styles.projectName}>{imageName}</div> {/* Affiche le nom de l'image */}
-    </Html>
-  )}
+    
     </motion.mesh>
 
           </group>
@@ -333,6 +331,8 @@ const Gallery = () => {
     const [uDistortion, setUDistortion] = useState(0); // Intensité de la distorsion
     const router = useRouter();
 
+    // Nom du projet actuel
+
     const goToProject = (url) => {
       router.push(url);
     }
@@ -342,7 +342,6 @@ const Gallery = () => {
     <div
       className={styles.galleryContainer}
     >
-
       <MusicButton />
 <motion.p
 initial={{opacity:0}}
@@ -392,7 +391,7 @@ className={styles.scrollDown}>Scroll Down</motion.p>
          </Suspense>
          <Environment preset="studio" />
          <EffectComposer>
-         <SelectiveBloom selection={IcosahedronScene.current}  luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+         <SelectiveBloom lights selection={IcosahedronScene.current}  luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
          <Vignette eskil={false} offset={0.1} darkness={0.8} />
 
          </EffectComposer>
@@ -518,7 +517,7 @@ const Items = ({ w = 0.7, gap = 20, uDistortion, uMouse, onPointerOver, onPointe
       const pageLength = totalWidth / viewport.width; 
     return (
       <ScrollControls horizontal damping={0.1} pages={pageLength}>
-       <GalleryImages images={ImgUrls} uMouse={uMouse} uDistortion={uDistortion}  />
+       <GalleryImages images={ImgUrls} uMouse={uMouse} uDistortion={uDistortion}   />
       </ScrollControls>
     )
   }
@@ -542,6 +541,7 @@ const { viewport } = useThree();
             uDistortion={uDistortion}
             imageName={item.name}
             projectUrl={item.url}
+        
       
           />
         ))}
