@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
         <PageAnimatePresence>
         <Link href="/">
         <div className="homeBtn">
-          <p>ADEOLA TCHAOU</p>
+          <p>SAVALOU STUDIO</p>
         </div>
         </Link>
       

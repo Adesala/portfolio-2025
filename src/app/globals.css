@@ -29,5 +29,13 @@ body {
   z-index: 2;
   font-size: 0.875rem;
   color:white;
+  transition: text-shadow 0.3s ease-in-out;
 }
 
+.homeBtn:hover {
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.4),
+    0 0 16px rgba(255, 255, 255, 0.25),
+    0 0 32px rgba(255, 255, 255, 0.15);
+
+}
