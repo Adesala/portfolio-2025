@@ -40,6 +40,9 @@
     height: 100vh;
     width: 100%;
     background-color: #0e0e0e;
+    background-image: url("/images/cube.png");
+   
+    background-position: right;
 }
 
 
@@ -130,6 +133,25 @@
 }
 
 
+@keyframes softGlow {
+  0% {
+    box-shadow: 0 0 0px rgba(255, 255, 255, 0);
+    opacity: 0.85;
+  }
+  50% {
+    box-shadow: 
+      0 0 24px rgba(255, 255, 255, 0.25),
+      0 0 64px rgba(255, 255, 255, 0.15);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(255, 255, 255, 0);
+    opacity: 0.85;
+  }
+}
+
+
+
 .btnToSite {
     height: 100px;
     width: 100px;
@@ -148,6 +170,7 @@
     font-family: 'Oswald', sans-serif;
     font-weight: bold;
     z-index: 3;
+    animation: softGlow 4.5s ease-in-out infinite;
 .btnText{
     color: white;
     font-size: 12px;
