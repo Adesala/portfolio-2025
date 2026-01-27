@@ -262,6 +262,10 @@
 }
 
 @media only screen and (max-width: 500px) {
+    .homeGalleryContainer {
+        background-position: center;
+        background-size: cover;
+    }
  .homeTitle {
      font-size: 2rem;}
 
