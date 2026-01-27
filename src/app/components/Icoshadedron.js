@@ -138,7 +138,7 @@ const FloatingIcosahedron = ({ position, scale, mousePositionRef }) => {
 const IcosahedronScene = ({ count = 200 }) => {
   const { size } = useThree();
   const mousePositionRef = useRef({ x: 0, y: 0 });
-  const dispersionFactor = size.width < 768 ? 3 : 10;
+  const dispersionFactor = size.width < 768 ? 3 : 6;
   // Stocker les positions et tailles des objets une fois pour toute
   const positionsRef = useRef(null);
 

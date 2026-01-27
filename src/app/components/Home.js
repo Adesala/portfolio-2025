@@ -11,6 +11,7 @@ import FramerMagnetic from './FramerMagnetic';
 import Link from 'next/link';
 import { oswald } from '../assets/fonts';
 import MusicButton from "./MusicButton";
+import { Value } from "sass";
 
 
 const FogBackground = () => {
@@ -83,7 +84,7 @@ const Gallery = ({ setSceneLoaded }) => {
 </Suspense>
          <Environment preset="studio" environmentIntensity={0.1} />
          <EffectComposer>
-      
+     {/*  <LensFlare enabled={true}  opacity={1} followMouse={true} /> */}
         <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.7} height={480} kernelSize={7}  mipmapBlur />
         <Noise opacity={0.02} />
         <Vignette eskil={false} offset={0.6} darkness={0.8} />
