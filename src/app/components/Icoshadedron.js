@@ -155,16 +155,20 @@ const IcosahedronScene = ({ count = 200 }) => {
 
   // Détecter la position de la souris
 useEffect(() => {
-  const handleMouseMove = (e) => {
+  const handlePointerMove = (e) => {
     mousePositionRef.current = {
       x: (e.clientX - window.innerWidth / 2) / dispersionFactor,
       y: -(e.clientY - window.innerHeight / 2) / dispersionFactor,
     };
   };
 
-  window.addEventListener("mousemove", handleMouseMove);
-  return () => window.removeEventListener("mousemove", handleMouseMove);
+  window.addEventListener("pointermove", handlePointerMove);
+
+  return () => {
+    window.removeEventListener("pointermove", handlePointerMove);
+  };
 }, [dispersionFactor]);
+
 
   return (
     <>
