@@ -50,6 +50,7 @@ const Gallery = ({ setSceneLoaded }) => {
       
       {/* Canvas pour les images */}
       <Canvas
+      className={styles.homeGalleryCanvas}
         style={{ width: '100%', height: '100%' }}
       
         camera={{ position: [0, 0, 25], near: 0.1, far: 1000 }}
