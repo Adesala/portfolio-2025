@@ -3,6 +3,7 @@ import "./globals.css";
 import PageAnimatePresence from "./components/PageAnimations/PageAnimatePresence";
 import Link from "next/link";
 import { MusicProvider } from "./components/MusicProvider/MusicProvider";
+import { MyLoader } from "./components/Loader";
 
 
  const wallpoet = Wallpoet({   weight: '400', // Cette police n'a qu'un seul poids
@@ -25,6 +26,9 @@ export const metadata = {
 
 
 export default function RootLayout({ children }) {
+
+ 
+
   return (
     <html lang="en">
       <body

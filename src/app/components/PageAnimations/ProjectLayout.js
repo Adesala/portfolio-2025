@@ -1,26 +1,98 @@
 'use client'
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Loader, Environment} from "@react-three/drei";
+import { Loader, Environment, useProgress} from "@react-three/drei";
 import { Bloom, EffectComposer, Noise , Vignette } from '@react-three/postprocessing'
 import React, {Suspense, useState, useRef, use, useEffect, useLayoutEffect} from 'react';
 import styles from '../../assets/projectLayout.module.scss';
 import IcosahedronScene from '../Icoshadedron';
 import * as THREE from "three";
-import {motion, useScroll, useTransform, useMotionValueEvent} from 'framer-motion';
+import {motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence} from 'framer-motion';
 import FramerMagnetic from '../FramerMagnetic';
 import Link from 'next/link';
 import projectInfos from "@/app/constant/projectsInfos";
 import ReactPlayer from "react-player/youtube";
-import { oswald, inter, wallpoet } from "../../assets/fonts";
+import { oswald, inter, wallpoet, spaceGrotesk } from "../../assets/fonts";
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import MusicButton from "../MusicButton";
+import FogPlane from "../BackgroundSmoke";
+
+function MyLoader() {
+  const { active, progress } = useProgress()
+  const [visible, setVisible] = useState(true)
+  const [displayProgress, setDisplayProgress] = useState(0)
+
+  // Smooth progress interpolation
+  useEffect(() => {
+    let raf
+    const update = () => {
+      setDisplayProgress(prev => {
+        const diff = progress - prev
+        if (Math.abs(diff) < 0.5) return progress
+        return prev + diff * 0.08
+      })
+      raf = requestAnimationFrame(update)
+    }
+    update()
+    return () => cancelAnimationFrame(raf)
+  }, [progress])
+
+  // Hide loader only when everything is fully done
+  useEffect(() => {
+    if (!active && progress === 100) {
+      const timeout = setTimeout(() => {
+        setVisible(false)
+        document.body.style.overflow = "auto"
+      }, 500) // petite latence premium
+      return () => clearTimeout(timeout)
+    }
+  }, [active, progress])
+
+  // Block scroll while loading
+  useEffect(() => {
+    if (visible) {
+      document.body.style.overflow = "hidden"
+    }
+  }, [visible])
+
+  if (!visible) return null
+
+  return (
+    <motion.div
+      className={styles.loaderPage}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
+    >
+      {displayProgress.toFixed(0)} %
+    </motion.div>
+  )
+}
 
 
 
-const Gallery = () => {
+const SceneLoadedCallback = ({ onLoaded }) => {
+  const [called, setCalled] = useState(false);
+
+  useEffect(() => {
+    if (!called) {
+      onLoaded();
+      setCalled(true); // on ne rappelle pas onLoaded plusieurs fois
+    }
+  }, [called, onLoaded]);
+
+  return null;
+};
+
+const Gallery = ({onLoaded,project}) => {
+
+   const [sceneLoaded, setSceneLoaded] = useState(false);
+
+  useEffect(() => {
+    if (sceneLoaded) onLoaded(); // Quand le canvas est prêt, on déclenche le loader ready
+  }, [sceneLoaded]);
     
-      
   return (
     <div
       className={styles.projectGalleryContainer}
@@ -34,10 +106,18 @@ const Gallery = () => {
         camera={{ position: [0, 0, 25], near: 0.1, far: 1000 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
-  
+    <FogPlane />
        <directionalLight 
   position={[5, 5, 5]} 
   intensity={1.5} 
+  color={project.colors ? project.colors[0] : 'white'}
+  castShadow 
+  shadow-mapSize={[1024, 1024]}
+/>
+       <directionalLight 
+  position={[5, 0, -5]} 
+  intensity={1.5} 
+  color={project.colors ? project.colors[1] : 'white'}
   castShadow 
   shadow-mapSize={[1024, 1024]}
 />
@@ -58,16 +138,17 @@ const Gallery = () => {
 <FloatingLights />
          <Suspense fallback={null}>
         <IcosahedronScene ref={IcosahedronScene} />
+          <SceneLoadedCallback onLoaded={() => setSceneLoaded(true)} />
          </Suspense>
-         <Environment preset="studio" />
+         <Environment preset="studio"  environmentIntensity={0.1} />
          <EffectComposer>
     
-        <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+       <Bloom luminanceThreshold={0.15} luminanceSmoothing={0.7} height={480} kernelSize={7}  mipmapBlur />
         <Noise opacity={0.02} />
-        <Vignette eskil={false} offset={0.1} darkness={0.9} />
+           <Vignette eskil={false} offset={0.6} darkness={0.8} />
          </EffectComposer>
       </Canvas>
-      <Loader />
+      <MyLoader />
     </div>
   );
 }
@@ -100,6 +181,13 @@ const [, setScrollValue] = useState()
 const textContainer = useRef(null)
 const [key, setKey] = useState(0);
 const [isMounted, setIsMounted] = useState(false);
+
+const [loaderReady, setLoaderReady] = useState(false);
+
+// Callback pour savoir quand tout est chargé
+const handleSceneLoaded = () => setLoaderReady(true);
+
+console.log('Current project:', project);
 
 useEffect(() => {
   const timer = setTimeout(() => {
@@ -140,23 +228,33 @@ const [isClient, setIsClient] = useState(false);
   }
 
   
-  
+  const title = project?.title?.split(" ");
 
   return (
-    <div  className={styles.projectContainer}>
+    <> 
+    <MyLoader />
+    <div  className={styles.projectContainer} style={{backgroundImage:`url(${project.textureName})`}}>
+  
         <div className={styles.infoContainer}>
-        <motion.p
-         initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
-         animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
-         transition={{ duration: 1, delay: 0.2}}
-        className={`${styles.homeSubTitle}`}>{`[ ${project.job} ]`}</motion.p>
+        
         <motion.h1
-        initial={{ opacity: 0, y:10, filter: 'blur(10px)'}}
-        animate={{ opacity: 1, y:0, filter: 'blur(0px)'}}
-        transition={{ duration: 2, delay: 0.8, type: 'linear', stiffness: 120}}
-        className={`${styles.homeTitle} ${oswald.className}`}>{project?.title}</motion.h1>
+       
 
+className={`${styles.homeTitle} ${spaceGrotesk.className}`}>  
+<motion.span  initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
+transition={{ duration: 1.2, delay: 2, ease: [0.22, 1, 0.36, 1] }} className={styles.light}>{title[0]}</motion.span>{" "}
+<motion.span  initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
+transition={{ duration: 1.2, delay: 2, ease: [0.22, 1, 0.36, 1] }} className={styles.bold}>{title[1]}</motion.span>
+  </motion.h1>
+         <motion.p
+      initial={{ opacity: 0 }}
+animate={{ opacity: 0.7 }}
+transition={{ duration: 1, delay: 2.5 }}
+        className={`${styles.homeSubTitle}`}>{`[ ${project.job} ]`}</motion.p>
         </div>
+       
         <div className={styles.btnContainer}>
 <motion.p
 initial={{opacity:0}}
@@ -172,7 +270,7 @@ className={styles.scrollDown}>Scroll Down</motion.p>
 
         
         <div className={styles.projectHeader}>
-<Gallery />
+<Gallery project={project} onLoaded={handleSceneLoaded} />
         </div>
         <div ref={textContainer} className={styles.projectContent}>
           <p className={styles.projectCount}>{`[ Project 0${project.id + 1} / 0${projectInfos.length} ]`}</p>
@@ -196,13 +294,12 @@ return <Word key={i} progress={scrollYProgress} range={[start, end]}>{word}</Wor
       clipPath: 'inset(0% 0% 0% 0%)', // L'animation de clip-path quand l'élément devient visible
     }}
     initial={{
-      clipPath: 'inset(100% 100% 100% 0%)', // L'état initial (complètement caché avec inset)
+      clipPath: 'inset(100% 0% 100% 0%)', // L'état initial (complètement caché avec inset)
     }}
     transition={{
       duration: 1.5,
-      delay:0.5, 
-      type:'spring', // Durée de l'animation
-       // Courbe de transition
+      delay:0.1,
+      ease:'easeInOut', // Courbe de transition 
     }}
     key={i} className={styles.item}>
        <Image src={img} alt={project} width={0} height={0}   sizes="100vw" 
@@ -328,6 +425,7 @@ className={styles.btnToProject}>
    </div>
         </div>
     </div>
+    </>
 )
 
 };

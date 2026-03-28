@@ -1,3 +1,5 @@
+import { color } from "framer-motion"
+
 const projectInfos = [
     {
         id:0,
@@ -6,10 +8,10 @@ const projectInfos = [
         stack: '',
         websiteLink:'https://www.arthurdorval.fr',
         projectUrl:'/projects/arthur-dorval/',
-        textureName: 'arthurSite.png',
+        textureName: '/images/arthurhome.png',
         job: 'UX UI Design & Development',
-        imagesUrls: ['/images/arthurhome.png', '/images/ArthurVerticalScroll.gif', '/images/ArthurProject.gif', '/images/ArthurWorks.gif']
-
+        imagesUrls: ['/images/arthurhome.png', '/images/ArthurVerticalScroll.gif', '/images/ArthurProject.gif', '/images/ArthurWorks.gif'],
+        colors:['#f19200', '#616bbf'],
     },
     {
         id:1,
@@ -21,6 +23,7 @@ const projectInfos = [
         projectUrl:'/projects/mel-et-nous/',
         textureName: 'NotreApp.png',
         job: 'UX UI Design',
+        colors:['#00cec9', '#5b61c8'],
     },
     {   id:2,
         title: 'Alpine Quality',    
@@ -31,7 +34,8 @@ const projectInfos = [
         projectUrl:'/projects/alpine-quality/',
         textureName: 'Alpine.png',
         job: 'UX UI Design, Development & 3D Modeling',
-        imagesUrls: ['/images/Alpine.png', '/images/AlpineShowroom.gif', '/images/RenduEtiquette.webp', '/images/renduHuileCocoDrape.webp']
+        imagesUrls: ['/images/Alpine.png', '/images/AlpineShowroom.gif', '/images/RenduEtiquette.webp', '/images/renduHuileCocoDrape.webp'],
+        colors:['#009c65', '#518ca6'],
     },
     {
         id:3,
@@ -43,7 +47,8 @@ const projectInfos = [
         projectUrl:'/projects/tomahawk-consulting/',
         textureName: 'Tomahawk.png',
         job: 'UX UI Design & Development',
-        imagesUrls: ['/images/tomahawkHeader.gif', '/images/tomahawkRendu.gif']
+        imagesUrls: ['/images/tomahawkHeader.gif', '/images/tomahawkRendu.gif'],
+        colors:['#c8eb3e', '#010078'],
 
     },
     

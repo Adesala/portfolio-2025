@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 333.44 546.09" width="300">
+  <style>
+    polygon {
+      fill: #f5e9e9;
+      transform-origin: 166.17px 273px;
+      animation: breathe 2.6s ease-in-out infinite alternate;
+      transform: scale(0.2);
+    }
+
+    #loader {
+      filter: drop-shadow(0 0 5px #f5e9e9);
+      transform: rotate(45deg);
+      transform-origin: 166.17px 273px;
+    }
+
+    /* Distance UNIQUE réduite */
+    :root { --d: 0.22em; }
+
+    .triangle-7 { animation: none; }
+
+    .triangle-1 { --tx: calc(-1 * var(--d)); --ty: calc(-1.9 * var(--d)); }
+    .triangle-2 { --tx: var(--d); --ty: calc(-1.9 * var(--d)); }
+
+    .triangle-3 { --tx: calc(-1 * var(--d)); --ty: 0em; }
+    .triangle-4 { --tx: var(--d); --ty: 0em; }
+
+    .triangle-5 { --tx: 0em; --ty: calc(-1 * var(--d)); }
+    .triangle-6 { --tx: 0em; --ty: calc(-1 * var(--d)); }
+
+    .triangle-8 { --tx: calc(-1 * var(--d)); --ty: var(--d); }
+    .triangle-9 { --tx: var(--d); --ty: var(--d); }
+
+    .triangle-10 { --tx: 0em; --ty: var(--d); }
+
+    @keyframes breathe {
+      0%   { transform: translate(0,0) scale(0.2); }
+      50%  { transform: translate(var(--tx), var(--ty)) scale(0.22); }
+      100% { transform: translate(0,0) scale(0.2); }
+    }
+  </style>
+
+<g id="loader">
+  <polygon class="triangle-1"  points="0 112.5 166.17 .25 166.17 112.5 0 112.5"/>
+  <polygon class="triangle-2"  points="331.13 112.25 164.96 0 166.17 112.5 331.13 112.25"/>
+  <polygon class="triangle-3"  points="0 289.67 0 112.5 61.63 289.67 0 289.67"/>
+  <polygon class="triangle-4"  points="333.44 290.73 331.13 112.25 270.72 289.67 333.44 290.73"/>
+  <polygon class="triangle-5"  points="166.17 112.5 61.63 289.67 0 112.5 166.17 112.5"/>
+  <polygon class="triangle-6"  points="270.72 289.67 166.17 112.5 331.13 112.25 270.72 289.67"/>
+  <polygon class="triangle-7"  points="61.63 289.67 270.72 289.67 166.17 112.5 61.63 289.67"/>
+  <polygon class="triangle-8"  points="166.17 546.09 61.63 289.67 0 289.67 166.17 546.09"/>
+  <polygon class="triangle-9"  points="333.44 290.73 166.17 546.09 270.72 289.67 333.44 290.73"/>
+  <polygon class="triangle-10" points="61.63 289.67 270.72 289.67 166.17 546.09 61.63 289.67"/>
+</g>
+</svg>
+

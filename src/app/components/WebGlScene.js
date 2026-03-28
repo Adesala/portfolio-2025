@@ -1,6 +1,6 @@
 'use client'
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useTexture, ScrollControls, Scroll ,useScroll, Loader, useVideoTexture, Html, Environment} from "@react-three/drei";
+import { useTexture, ScrollControls, Scroll ,useScroll, Loader, useVideoTexture, Html, Environment, useProgress} from "@react-three/drei";
 import { Bloom, DepthOfField, EffectComposer, Noise, SelectiveBloom, Vignette , LensFlare, BrightnessContrast } from '@react-three/postprocessing'
 import { useRef, useEffect, useState, Suspense } from "react";
 import { motion, useTransform} from "framer-motion";
@@ -13,41 +13,99 @@ import { oswald, wallpoet} from '../assets/fonts';
 import MusicButton from "./MusicButton";
 
 
+function MyLoader() {
+  const { active, progress } = useProgress()
+  const [visible, setVisible] = useState(true)
+  const [displayProgress, setDisplayProgress] = useState(0)
+
+  // Smooth progress interpolation
+  useEffect(() => {
+    let raf
+    const update = () => {
+      setDisplayProgress(prev => {
+        const diff = progress - prev
+        if (Math.abs(diff) < 0.5) return progress
+        return prev + diff * 0.08
+      })
+      raf = requestAnimationFrame(update)
+    }
+    update()
+    return () => cancelAnimationFrame(raf)
+  }, [progress])
+
+  // Hide loader only when everything is fully done
+  useEffect(() => {
+    if (!active && progress === 100) {
+      const timeout = setTimeout(() => {
+        setVisible(false)
+        document.body.style.overflow = "auto"
+      }, 500) // petite latence premium
+      return () => clearTimeout(timeout)
+    }
+  }, [active, progress])
+
+  // Block scroll while loading
+  useEffect(() => {
+    if (visible) {
+      document.body.style.overflow = "hidden"
+    }
+  }, [visible])
+
+  if (!visible) return null
+
+  return (
+    <motion.div
+      className={styles.loaderPage}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
+    >
+      {displayProgress.toFixed(0)} %
+    </motion.div>
+  )
+}
+
+
+
 
 const vertexShader = `
-varying vec2 vUv;
-uniform float uTime;
-uniform vec2 uMouse;
+uniform sampler2D uDisplacement; // FBO texture
+uniform float uIntensity;
+uniform float uScroll;
 uniform float uScrollDistortion;
-uniform float uDistortion;
-uniform float uIntensity; // Ajout d'un paramètre d'intensité
-uniform float uScroll; // Ajout d'un paramètre de scroll
-uniform float uDistortionStrength; // Ajout d'un paramètre de force de distorsion
+
+varying vec2 vUv;
 
 void main() {
     vUv = uv;
 
-    // Distance entre la souris et chaque vertex
-    float dist = distance(uv, uMouse);
-    float strength = uDistortion * (1.0 - smoothstep(0.0, 0.3, dist));
-    float distortionStrength = abs(uv.y - 0.5) * 2.0; // Plus proche du haut/bas, plus la distorsion est forte
-    distortionStrength *= uDistortion;
-
-    // Génération d'un facteur de séparation unique pour chaque vertex
-    float separation = fract(sin(dot(position.xy, vec2(12.9898, 78.233))) * 43758.5453);
-
-    float wave = sin(position.y * 0.5 + uTime / 2.0) * 0.05 * uScroll * uScrollDistortion;
     vec3 newPosition = position;
+
+    // On lit la height map venant du FBO
+    float height = texture2D(uDisplacement, uv).r;
+
+    // On peut renforcer les contrastes pour un effet plus premium
+    height = pow(height, 1.5);
+
+    // Intensité globale
+    float displacement = height * uIntensity;
+
+    // Déformation principale en profondeur
+    newPosition.z += displacement * 0.6;
+
+    // Micro distortion XY (évite effet flat)
+    newPosition.x += displacement * 0.2;
+    newPosition.y += displacement * 0.2;
+
+    // Scroll wave conservée
+    float wave = sin(position.y * 0.5) * 0.05 * uScroll * uScrollDistortion;
     newPosition.x += wave;
-    
-
-    newPosition.x += (sin(uTime * 3.0 + separation * 15.0) * strength * uIntensity);
-    newPosition.y += (cos(uTime * 2.0 + separation * 20.0) * strength * uIntensity);
-    newPosition.z += (sin(uTime * 4.0 + separation * 25.0) * strength * uIntensity * 0.5);
-
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
+
+
 `;
 
 const fragmentShader = `
@@ -97,8 +155,6 @@ void main() {
   gl_FragColor = mix(vec4(finalColor, color.a), whiteColor, uIsClicked);
 }
 `;
-
-
 
 // 🎨 ShaderMaterial (composant pour gérer le shader de la texture)
 const TextureMaterial = ({ texture, mouseRef, distortionRef, uTime, scrollRef, isScrolling, imageHeight, imageWidth,  clicked}) => {
@@ -339,6 +395,7 @@ const Gallery = () => {
         
   return (
     <> 
+    <MyLoader />
     <div
       className={styles.galleryContainer}
     >
@@ -396,7 +453,6 @@ className={styles.scrollDown}>Scroll Down</motion.p>
 
          </EffectComposer>
       </Canvas>
-      <Loader />
     </div>
     <div className={styles.mobileGalleryContainer}>
       <div className={`${styles.mobileProjectLinks}`}>
@@ -453,7 +509,6 @@ className={styles.scrollDown}>Scroll Down</motion.p>
 
          </EffectComposer>
       </Canvas>
-      <Loader />
     </div>
     </>
   );
