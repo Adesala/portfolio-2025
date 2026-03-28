@@ -8,11 +8,23 @@ import { audioBuffers } from "./audio/audioBuffer";
 import { useTransform } from "framer-motion";
 
 /* ===========================
+   CONFIG & UTILS
+=========================== */
+// Détection mobile simple basée sur la largeur
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+// Vecteurs réutilisables pour éviter le Garbage Collection dans la loop
+const _v1 = new THREE.Vector3();
+const _v2 = new THREE.Vector3();
+const _v3 = new THREE.Vector3();
+
+/* ===========================
    MATERIAL
 =========================== */
-const MarbleMaterial = () => {
+const MarbleMaterial = ({ isMobileDevice }) => {
   const textures = useTexture({
     map: '/marble/color.jpg',
+    // On charge la normalMap mais on ne l'appliquera pas si mobile
     normalMap: '/marble/normal.jpg',
     roughnessMap: '/marble/roughness.jpg',
   });
@@ -21,7 +33,10 @@ const MarbleMaterial = () => {
 
   return (
     <meshStandardMaterial
-      {...textures}
+      map={textures.map}
+      roughnessMap={textures.roughnessMap}
+      // Astuce critique : on passe null à normalMap sur mobile pour gagner en perf
+      normalMap={isMobileDevice ? null : textures.normalMap}
       roughness={0.4}
       metalness={0.05}
       transparent
@@ -39,6 +54,7 @@ const FloatingIcosahedron = ({
   scrollProgress,
   targetPosition,
   nodes,
+  isMobileDevice,
 }) => {
   const meshRef = useRef();
   const velocity = useRef(new THREE.Vector3());
@@ -81,58 +97,80 @@ const FloatingIcosahedron = ({
   useFrame(({ clock }, delta) => {
     if (!meshRef.current) return;
 
+    // Limitation du delta sur mobile pour éviter les sauts physiques si le framerate chute
+    const safeDelta = isMobileDevice ? Math.min(delta, 0.1) : delta;
+    
     const t = clock.getElapsedTime();
     const progress = scrollValueRef.current;
 
     /* FLOAT */
     const floatInfluence = Math.pow(1 - progress, 2);
-    const floatOffset = new THREE.Vector3(
-      Math.sin(t * speed) * 0.1 * direction.x * floatInfluence,
-      Math.cos(t * speed) * 0.1 * direction.y * floatInfluence,
+    // Réduction de l'amplitude du float sur mobile pour moins de calculs trigonométriques si nécessaire
+    const floatAmp = isMobileDevice ? 0.05 : 0.1;
+    
+    _v1.set(
+      Math.sin(t * speed) * floatAmp * direction.x * floatInfluence,
+      Math.cos(t * speed) * floatAmp * direction.y * floatInfluence,
       0
     );
 
     /* MORPH VERS ANNEAU */
     const basePosition = stablePosition.clone().lerp(targetPosition, progress);
-    const restPosition = basePosition.clone().add(floatOffset);
+    const restPosition = basePosition.add(_v1);
 
-    /* REPULSION CURSEUR */
+    /* REPULSION CURSEUR (Optimisé) */
+    // Sur mobile, on réduit la portée et la force de répulsion pour simplifier les calculs
     const mouse = mousePositionRef.current;
-  const toMesh = meshRef.current.position.clone().sub(new THREE.Vector3(mouse.x, mouse.y, 0));
+    
+    // Utilisation de vecteurs temporaires globaux pour éviter l'allocation
+    _v2.set(mouse.x, mouse.y, 0);
+    _v3.copy(meshRef.current.position).sub(_v2);
 
-    const distance = toMesh.length();
-    const influence = Math.max(0, 3 - distance / 10);
-    let repulsionForce = new THREE.Vector3();
+    const distance = _v3.length();
+    
+    // Paramètres ajustés pour mobile
+    const maxInfluence = isMobileDevice ? 2.5 : 3;
+    const repulsionStrength = isMobileDevice ? 20 : 40;
+    
+    const influence = Math.max(0, maxInfluence - distance / 10);
+    
+    let repulsionForce = _v3.clone(); // Réutilise _v3
+    
     if (influence > 0) {
-      repulsionForce.copy(toMesh).normalize().multiplyScalar(influence * 40);
+      repulsionForce.normalize().multiplyScalar(influence * repulsionStrength);
+    } else {
+      repulsionForce.set(0, 0, 0);
     }
 
     /* SPRING */
     const springForce = restPosition.clone().sub(meshRef.current.position).multiplyScalar(12);
     const dampingForce = velocity.current.clone().multiplyScalar(-8);
+    
+    // Calcul accélération
     const acceleration = springForce.add(repulsionForce).add(dampingForce);
-    velocity.current.add(acceleration.multiplyScalar(delta));
-    meshRef.current.position.add(velocity.current.clone().multiplyScalar(delta));
+    
+    velocity.current.add(acceleration.multiplyScalar(safeDelta));
+    meshRef.current.position.add(velocity.current.clone().multiplyScalar(safeDelta));
 
     /* ROTATION INDIVIDUELLE */
-    meshRef.current.rotateOnAxis(rotationAxis, delta * 0.1);
+    meshRef.current.rotateOnAxis(rotationAxis, safeDelta * 0.1);
 
     /* FADE */
     if (opacity.current < 1) {
-      opacity.current = Math.min(1, opacity.current + delta * 1.5);
+      opacity.current = Math.min(1, opacity.current + safeDelta * 1.5);
       meshRef.current.material.opacity = opacity.current;
     }
 
-    meshRef.current.material.normalMap = null;
-
-    /* SOUND */
-    const movementIntensity = velocity.current.length();
-    if (movementIntensity > 0.8 && audioBuffers.meshMove) {
-      const now = clock.getElapsedTime();
-      if (now - (meshRef.current.lastSoundTime || 0) > 0.15) {
-        const pan = THREE.MathUtils.clamp(meshRef.current.position.x / 10, -1, 1);
-        playFX({ buffer: audioBuffers.meshMove, pan, volume: 0.03, lowpassFreq: 1200 });
-        meshRef.current.lastSoundTime = now;
+    /* SOUND - Désactivé sur mobile pour perf et politique autoplay */
+    if (!isMobileDevice) {
+      const movementIntensity = velocity.current.length();
+      if (movementIntensity > 0.8 && audioBuffers.meshMove) {
+        const now = clock.getElapsedTime();
+        if (now - (meshRef.current.lastSoundTime || 0) > 0.15) {
+          const pan = THREE.MathUtils.clamp(meshRef.current.position.x / 10, -1, 1);
+          playFX({ buffer: audioBuffers.meshMove, pan, volume: 0.03, lowpassFreq: 1200 });
+          meshRef.current.lastSoundTime = now;
+        }
       }
     }
   });
@@ -142,10 +180,11 @@ const FloatingIcosahedron = ({
       ref={meshRef}
       geometry={nodes.Icosphere.geometry}
       scale={scale}
-      castShadow
-      receiveShadow
+      // Ombres désactivées sur mobile (très coûteux)
+      castShadow={!isMobileDevice}
+      receiveShadow={!isMobileDevice}
     >
-      <MarbleMaterial />
+      <MarbleMaterial isMobileDevice={isMobileDevice} />
     </mesh>
   );
 };
@@ -156,7 +195,16 @@ const FloatingIcosahedron = ({
 const IcosahedronScene = ({ count = 200, scrollProgress }) => {
   const { size } = useThree();
   const mousePositionRef = useRef({ x: 0, y: 0 });
-  const dispersionFactor = size.width < 768 ? 8 : 10;
+  
+  // Ajustement dynamique de la dispersion et du compte
+  const isMobileDevice = useMemo(() => size.width < 768, [size.width]);
+  const dispersionFactor = isMobileDevice ? 8 : 10;
+  
+  // Réduction drastique du nombre d'objets sur mobile (de 200 à ~60)
+  const finalCount = useMemo(() => {
+    return isMobileDevice ? Math.floor(count * 0.35) : count;
+  }, [count, isMobileDevice]);
+
   const positionsRef = useRef(null);
   const groupRef = useRef();
   const scrollValueRef = useRef(0);
@@ -170,7 +218,7 @@ const IcosahedronScene = ({ count = 200, scrollProgress }) => {
   }, [scrollProgress]);
 
   if (!positionsRef.current) {
-    positionsRef.current = Array.from({ length: count }, () => ({
+    positionsRef.current = Array.from({ length: finalCount }, () => ({
       position: [
         (Math.random() - 0.5) * size.width / dispersionFactor,
         (Math.random() - 0.5) * size.height / dispersionFactor,
@@ -191,43 +239,33 @@ const IcosahedronScene = ({ count = 200, scrollProgress }) => {
     return () => window.removeEventListener("pointermove", handlePointerMove);
   }, [dispersionFactor]);
 
-  /* -------- ANNEAU -------- */
-
- const worldWidth = size.width / dispersionFactor;
-const worldHeight = size.height / dispersionFactor;
-
-const radius = Math.min(worldWidth, worldHeight) * 0.4;
-
+  const worldWidth = size.width / dispersionFactor;
+  const worldHeight = size.height / dispersionFactor;
+  const radius = Math.min(worldWidth, worldHeight) * 0.4;
 
   const targetPositions = useMemo(() => {
     return positionsRef.current.map((_, i) => {
-      const angle = (i / count) * Math.PI * 2;
+      const angle = (i / finalCount) * Math.PI * 2;
       const radialNoise = (Math.random() - 0.5) * 2;
-
       const x = Math.cos(angle) * (radius + radialNoise);
       const y = Math.sin(angle) * (radius + radialNoise);
       const z = (Math.random() - 0.5) * 4;
-
       return new THREE.Vector3(x, y, z);
     });
-  }, [count, radius]);
+  }, [finalCount, radius]);
 
   const { nodes } = useGLTF('/savalouobject.glb');
 
-  /* ROTATION GLOBALE UNIQUEMENT AU SCROLL */
+  const rotationZ = useTransform(
+    scrollProgress,
+    [0, 1],
+    [0, Math.PI * 2]
+  );
 
-const rotationZ = useTransform(
-  scrollProgress,
-  [0, 1],
-  [0, Math.PI * 2]
-);
-
-
-useFrame(() => {
-  if (!groupRef.current) return;
-
-  groupRef.current.rotation.z = rotationZ.get();
-});
+  useFrame(() => {
+    if (!groupRef.current) return;
+    groupRef.current.rotation.z = rotationZ.get();
+  });
 
   return (
     <group ref={groupRef}>
@@ -239,6 +277,7 @@ useFrame(() => {
           scrollProgress={scrollProgress}
           targetPosition={targetPositions[i]}
           nodes={nodes}
+          isMobileDevice={isMobileDevice}
         />
       ))}
     </group>
@@ -246,4 +285,3 @@ useFrame(() => {
 };
 
 export default IcosahedronScene;
-
